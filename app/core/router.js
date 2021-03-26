@@ -2,6 +2,8 @@ let restify = require('restify'),
     errs = require('restify-errors'),
     fs = require('fs');
 
+
+
 // To activate controllers
 let controllers = {}
     , controllers_path = process.cwd() + '/app/controllers';
@@ -13,7 +15,7 @@ fs.readdirSync(controllers_path).forEach(function (file) {
 });
 
 // helper function
-exports.getServer = function() {
+exports.getServer = function () {
     return server;
 };
 
@@ -35,8 +37,10 @@ server.listen(port, function (err) {
     if (err)
         console.error(err)
     else {
+
         // pseudo persistence : load data from JSON files
         controllers.PlayerController.initStorage();
         console.log('App is ready at : ' + port);
+
     }
 });
