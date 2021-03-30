@@ -1,10 +1,11 @@
 #drawArea{
 border: solid cadetblue 5px;
+background-color: whitesmoke;
 }
 
 #score
 {
     position: absolute;
     right: 25%;
-    top:25%;
+    top:15%;
 }

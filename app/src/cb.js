@@ -4,8 +4,8 @@ let context; // stocke le contexte de rendu 2D, outil que nous utiliserons pour 
 let mouseX;
 let mouseY;
 let paddle;
-let rightPressed;
-let leftPressed;
+let rightPressed = false;
+let leftPressed = false;
 
 class Joueur {
     constructor(name) {
@@ -24,6 +24,26 @@ class Game {
         this.vie = vie;
         this.joueur = joueur;
         this.playground = playground;
+    }
+    getScore() {
+        return this.score;
+    }
+    getVie() {
+        return this.vie;
+    }
+    getJoueur() {
+        return this.joueur;
+    }
+    getPlayground() {
+        return this.playground;
+    }
+
+    setJoueur(joueur) {
+        this.joueur = joueur;
+    }
+
+    addScore() {
+        this.score++;
     }
 }
 
@@ -108,24 +128,18 @@ class Paddle {
         this.color = "#8faaff";
     }
 
-    getSize() {
-        return this.size;
-    }
-
-    getColor() {
-        return this.color;
-    }
-
-    getPosX() {
-        return this.posX;
-    }
-
-    getPosY() {
-        return this.posY;
-    }
-
-    movePaddle(newPos) {
-        this.posX = newPos;
+    movePaddle(moveX) {
+        if (canvas.getContext) {
+            context.clearRect(this.posX, this.posY, this.width, this.height);
+        }
+        if (this.posX + moveX < 0) {
+            this.posX = 0;
+        } else if (this.posX + moveX + this.width > canvas.width) {
+            this.posX = canvas.width - this.width;
+        } else {
+            this.posX += moveX;
+        }
+        this.draw();
     }
 
     draw() {
@@ -208,37 +222,52 @@ function draw() {
 }
 
 function keyDown(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
+    if (e.keyCode == 39) {
         rightPressed = true;
-        console.log(rightPressed);
+        console.log("keyDown 39");
     }
-    else if (e.key == "Left" || e.key == "ArrowLeft") {
+    else if (e.keyCode == 37) {
         leftPressed = true;
-        console.log(leftPressed);
+        console.log("keyDown 37");
     }
 }
 
 function keyUp(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
+    if (e.keyCode == 39) {
         rightPressed = false;
+        console.log("keyUp 39");
     }
-    else if (e.key == "Left" || e.key == "ArrowLeft") {
+    else if (e.keyCode == 37) {
         leftPressed = false;
+        console.log("keyUp 37");
     }
+}
+
+function draw() {
+    //================ Paddle =======================
+    document.addEventListener("keydown", keyDown);
+    if (rightPressed) {
+        paddle.movePaddle(5);
+    }
+    else if (leftPressed) {
+        paddle.movePaddle(-5);
+        console.log("leftPressed");
+    }
+    document.addEventListener("keyup", keyUp);
+    //===============================================
 }
 
 $(document).ready(function () {
     canvas = document.getElementById('drawArea');
-    canvas.addEventListener("keydown", keyDown);
-    canvas.addEventListener("keyup", keyUp);
 
     context = canvas.getContext('2d');
 
+    game = new Game(0, 3, null, null);
+
     paddle = new Paddle();
     paddle.draw();
-    console.log(paddle.getColor());
 
-    /* Canvas */
-    //draw()
+    setInterval(draw, 10);
 
+    $('#score').html("score : " + game.getScore());
 });
