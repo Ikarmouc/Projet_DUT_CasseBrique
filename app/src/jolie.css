@@ -1,0 +1,10 @@
+#drawArea{
+border: solid cadetblue 5px;
+}
+
+#score
+{
+    position: absolute;
+    right: 25%;
+    top:25%;
+}

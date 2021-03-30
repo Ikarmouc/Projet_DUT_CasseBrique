@@ -4,6 +4,9 @@ let context; // stocke le contexte de rendu 2D, outil que nous utiliserons pour 
 let mouseX;
 let mouseY;
 let paddle;
+let rightPressed;
+let leftPressed;
+
 class Joueur {
     constructor(name) {
         this.name = name;
@@ -11,6 +14,11 @@ class Joueur {
 }
 
 class Game {
+    score;
+    vie;
+    joueur;
+    playground;
+
     constructor(score, vie, joueur, playground) {
         this.score = score;
         this.vie = vie;
@@ -20,6 +28,9 @@ class Game {
 }
 
 class Playground {
+
+    ball;
+    wall;
     constructor(ball) {
         this.wall = [];
         this.ball = ball;
@@ -36,6 +47,13 @@ class Playground {
 }
 
 class Brick {
+    color;
+    points;
+    speed;
+    posX;
+    posY;
+    sizeX;
+    sizeY;
     constructor(color, points, speed, posX, posY, sizeX, sizeY) {
         if (this.constructor === Brick) {
             throw new TypeError('Abstract class "Brick" cannot be instantiated directly');
@@ -76,6 +94,12 @@ class BrickSpeed extends Brick {
 }
 
 class Paddle {
+    posX;
+    posY;
+    width;
+    height;
+    color;
+
     constructor() {
         this.posX = (canvas.width - 100) / 2;
         this.posY = canvas.height - 15;
@@ -88,7 +112,7 @@ class Paddle {
         return this.size;
     }
 
-    getcolor() {
+    getColor() {
         return this.color;
     }
 
@@ -105,7 +129,7 @@ class Paddle {
     }
 
     draw() {
-        if ($("#drawArea").getContext) {
+        if (canvas.getContext) {
             context.beginPath();
             context.rect(this.posX, this.posY, this.width, this.height);
             context.fillStyle = this.color;
@@ -113,10 +137,15 @@ class Paddle {
             context.closePath();
         }
     }
-
 }
 
 class Ball {
+    size;
+    color;
+    posX;
+    posY;
+    angle;
+    speed;
     constructor(size, color, posX, posY, angle, speed) {
         this.size = size;
         this.color = color;
@@ -178,13 +207,37 @@ function draw() {
     }
 }
 
+function keyDown(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+        console.log(rightPressed);
+    }
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+        console.log(leftPressed);
+    }
+}
+
+function keyUp(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+}
+
 $(document).ready(function () {
+    canvas = document.getElementById('drawArea');
+    canvas.keydown(keyDown());
+    canvas.keyup(keyUp());
 
-    context = $("#drawArea").getContext('2d');
+    context = canvas.getContext('2d');
 
-    $paddle = new Paddle();
-    $paddle.draw();
+    paddle = new Paddle();
+    paddle.draw();
+    console.log($paddle.getColor());
 
-    /* Canvas */
-    //draw()
+/* Canvas *
+//draw()
 });
