@@ -3,7 +3,6 @@ let canvas;
 let context; // stocke le contexte de rendu 2D, outil que nous utiliserons pour le plateau de jeu
 let mouseX;
 let mouseY;
-let paddle;
 let rightPressed = false;
 let leftPressed = false;
 
@@ -48,22 +47,25 @@ class Game {
 }
 
 class Playground {
-
-    ball;
-    wall;
-    constructor(ball) {
-        this.wall = [];
-        this.ball = ball;
+    paddle;
+    constructor() {
+        this.paddle = new Paddle();
+        this.paddle.draw();
     }
 
-    addBrick(uneBrique) {
-        this.wall.push(uneBrique);
+    draw() {
+        console.log("Playground is drawing");
+        //================ Paddle =======================
+        if (rightPressed) {
+            this.paddle.movePaddle(5);
+        }
+        else if (leftPressed) {
+            this.paddle.movePaddle(-5);
+            console.log("leftPressed");
+        }
+        //===============================================
+        console.log("Playground has finished drawing");
     }
-
-    constructWall() {
-        //Construction du mur de manière automatique
-    }
-
 }
 
 class Brick {
@@ -186,7 +188,17 @@ class Ball {
     getColor() {
         return this.color;
     }
-
+    drawBall() {
+        if (canvas.getContext) {
+            context.beginPath();
+            context.arc(this.posX, this.posY, this.size, 0, 2 * Math.PI, false);
+            context.fillStyle = "black";
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = 'black';
+            context.stroke();
+        }
+    }
 }
 
 class Edge {
@@ -243,20 +255,6 @@ function keyUp(e) {
     }
 }
 
-function draw() {
-    //================ Paddle =======================
-    document.addEventListener("keydown", keyDown);
-    if (rightPressed) {
-        paddle.movePaddle(5);
-    }
-    else if (leftPressed) {
-        paddle.movePaddle(-5);
-        console.log("leftPressed");
-    }
-    document.addEventListener("keyup", keyUp);
-    //===============================================
-}
-
 $(document).ready(function () {
     canvas = document.getElementById('drawArea');
 
@@ -264,10 +262,14 @@ $(document).ready(function () {
 
     game = new Game(0, 3, null, null);
 
-    paddle = new Paddle();
-    paddle.draw();
+    playground = new Playground();
 
-    setInterval(draw, 10);
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+
+    setInterval(playground.draw, 10);
 
     $('#score').html("score : " + game.getScore());
+    ball = new Ball(7, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+    ball.drawBall();
 });
