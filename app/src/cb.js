@@ -229,15 +229,16 @@ function keyUp(e) {
 
 $(document).ready(function () {
     canvas = document.getElementById('drawArea');
-    canvas.keydown(keyDown());
-    canvas.keyup(keyUp());
+    canvas.addEventListener("keydown", keyDown);
+    canvas.addEventListener("keyup", keyUp);
 
     context = canvas.getContext('2d');
 
     paddle = new Paddle();
     paddle.draw();
-    console.log($paddle.getColor());
+    console.log(paddle.getColor());
 
-/* Canvas *
-//draw()
+    /* Canvas */
+    //draw()
+
 });
