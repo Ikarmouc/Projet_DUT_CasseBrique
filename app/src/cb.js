@@ -54,17 +54,15 @@ class Playground {
     }
 
     draw() {
-        console.log("Playground is drawing");
         //================ Paddle =======================
         if (rightPressed) {
-            this.paddle.movePaddle(5);
+            // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground il faut donc passer par cette méthode
+            this.playground.paddle.movePaddle(5);
         }
         else if (leftPressed) {
-            this.paddle.movePaddle(-5);
-            console.log("leftPressed");
+            this.playground.paddle.movePaddle(-5);
         }
         //===============================================
-        console.log("Playground has finished drawing");
     }
 }
 
@@ -236,22 +234,18 @@ function draw() {
 function keyDown(e) {
     if (e.keyCode == 39) {
         rightPressed = true;
-        console.log("keyDown 39");
     }
     else if (e.keyCode == 37) {
         leftPressed = true;
-        console.log("keyDown 37");
     }
 }
 
 function keyUp(e) {
     if (e.keyCode == 39) {
         rightPressed = false;
-        console.log("keyUp 39");
     }
     else if (e.keyCode == 37) {
         leftPressed = false;
-        console.log("keyUp 37");
     }
 }
 
@@ -267,7 +261,7 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
-    setInterval(playground.draw, 10);
+    setInterval(playground.draw, 15);
 
     $('#score').html("score : " + game.getScore());
     ball = new Ball(7, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
