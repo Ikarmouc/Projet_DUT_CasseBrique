@@ -3,7 +3,6 @@ let canvas;
 let context; // stocke le contexte de rendu 2D, outil que nous utiliserons pour le plateau de jeu
 let mouseX;
 let mouseY;
-let paddle;
 let rightPressed = false;
 let leftPressed = false;
 
@@ -48,22 +47,23 @@ class Game {
 }
 
 class Playground {
-
-    ball;
-    wall;
-    constructor(ball) {
-        this.wall = [];
-        this.ball = ball;
+    paddle;
+    constructor() {
+        this.paddle = new Paddle();
+        this.paddle.draw();
     }
 
-    addBrick(uneBrique) {
-        this.wall.push(uneBrique);
+    draw() {
+        //================ Paddle =======================
+        if (rightPressed) {
+            // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground il faut donc passer par cette méthode
+            this.playground.paddle.movePaddle(5);
+        }
+        else if (leftPressed) {
+            this.playground.paddle.movePaddle(-5);
+        }
+        //===============================================
     }
-
-    constructWall() {
-        //Construction du mur de manière automatique
-    }
-
 }
 
 class Brick {
@@ -186,7 +186,17 @@ class Ball {
     getColor() {
         return this.color;
     }
-
+    drawBall() {
+        if (canvas.getContext) {
+            context.beginPath();
+            context.arc(this.posX, this.posY, this.size, 0, 2 * Math.PI, false);
+            context.fillStyle = "black";
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = 'black';
+            context.stroke();
+        }
+    }
 }
 
 class Edge {
@@ -224,37 +234,19 @@ function draw() {
 function keyDown(e) {
     if (e.keyCode == 39) {
         rightPressed = true;
-        console.log("keyDown 39");
     }
     else if (e.keyCode == 37) {
         leftPressed = true;
-        console.log("keyDown 37");
     }
 }
 
 function keyUp(e) {
     if (e.keyCode == 39) {
         rightPressed = false;
-        console.log("keyUp 39");
     }
     else if (e.keyCode == 37) {
         leftPressed = false;
-        console.log("keyUp 37");
     }
-}
-
-function draw() {
-    //================ Paddle =======================
-    document.addEventListener("keydown", keyDown);
-    if (rightPressed) {
-        paddle.movePaddle(5);
-    }
-    else if (leftPressed) {
-        paddle.movePaddle(-5);
-        console.log("leftPressed");
-    }
-    document.addEventListener("keyup", keyUp);
-    //===============================================
 }
 
 $(document).ready(function () {
@@ -264,10 +256,14 @@ $(document).ready(function () {
 
     game = new Game(0, 3, null, null);
 
-    paddle = new Paddle();
-    paddle.draw();
+    playground = new Playground();
 
-    setInterval(draw, 10);
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+
+    setInterval(playground.draw, 15);
 
     $('#score').html("score : " + game.getScore());
+    ball = new Ball(7, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+    ball.drawBall();
 });
