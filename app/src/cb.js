@@ -41,22 +41,35 @@ class Game {
         this.joueur = joueur;
     }
 
-    addScore() {
-        this.score++;
+    addScore(nbPoints) {
+        this.score += nbPoints;
     }
 }
 
 class Playground {
     paddle;
+    wall = [];
     constructor() {
         this.paddle = new Paddle();
-        this.paddle.draw();
+        this.paddle.drawPaddle();
     }
 
-    draw() {
+    constructWall() {
+        for (let row = 0; row < 7; row++) {
+            for (let col = 0; col < 5; col++) {
+                if ((Math.random() + 1) % 2 == 0) {
+
+                    let brick = new BrickNormal();
+                }
+            }
+        }
+    }
+
+    drawPlayground() {
         //================ Paddle =======================
         if (rightPressed) {
-            // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground il faut donc passer par cette méthode
+            // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground
+            // il faut donc passer par cette méthode
             this.playground.paddle.movePaddle(5);
         }
         else if (leftPressed) {
@@ -93,23 +106,44 @@ class Brick {
     getSpeed() {
         return this.speed;
     }
-    getPosX() {
-        return this.posX;
-    }
-    getPosY() {
-        return this.posY;
+    drawBrick() {
+        if (canvas.getContext) {
+            context.beginPath();
+            context.rect(this.posX, this.posY, this.width, this.height);
+            context.fillStyle = this.color;
+            context.fill();
+            context.closePath();
+        }
     }
 }
 
-class brickNormal extends Brick {
+class BrickNormal extends Brick {
     constructor(posX, posY) {
         super("blue", 10, 0, posX, posY);
+    }
+    getPoints() {
+        return super.getPoints();
+    }
+    getSpeed() {
+        return super.getSpeed();
+    }
+    drawBrick() {
+        super.drawBrick();
     }
 }
 
 class BrickSpeed extends Brick {
     constructor(posX, posY) {
-        super("red", 30, 0.5, posX, posY);
+        super("green", 30, 0.5, posX, posY);
+    }
+    getPoints() {
+        return super.getPoints();
+    }
+    getSpeed() {
+        return super.getSpeed();
+    }
+    drawBrick() {
+        super.drawBrick();
     }
 }
 
@@ -139,10 +173,10 @@ class Paddle {
         } else {
             this.posX += moveX;
         }
-        this.draw();
+        this.drawPaddle();
     }
 
-    draw() {
+    drawPaddle() {
         if (canvas.getContext) {
             context.beginPath();
             context.rect(this.posX, this.posY, this.width, this.height);
@@ -211,24 +245,12 @@ class Void extends Edge {
 
 }
 
-
 function getMousePos(evt) {
     let rect = canvas.getBoundingClientRect();
     let scaleX = canvas.width / rect.width;
     let scaleY = canvas.height / rect.height;
     x = (evt.clientX - rect.left) * scaleX;
     y = (evt.clientY - rect.top) * scaleY;
-}
-
-
-function draw() {
-    if ($("#drawArea").getContext) {
-        ctx.beginPath();
-        ctx.rect($("#drawArea").width / 2, $("#drawArea").heith - 15, 40, 10);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        ctx.closePath();
-    }
 }
 
 function keyDown(e) {
@@ -261,7 +283,7 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
-    setInterval(playground.draw, 15);
+    setInterval(playground.drawPlayground, 15);
 
     $('#score').html("score : " + game.getScore());
     ball = new Ball(7, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
