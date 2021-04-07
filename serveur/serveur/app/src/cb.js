@@ -273,7 +273,7 @@ function keyUp(e) {
 
 
 //--------------------------------------------
-//Gestion de la récéption et envoie des score
+//Gestion de la récéption et envoie des scores
 //--------------------------------------------
 function getScore(event) {
     let xhr = new XMLHttpRequest();
@@ -284,9 +284,13 @@ function getScore(event) {
             console.log(score);
             for (let i = 0; i < score.length; i++) {
                 console.log(score[i]);
-                let newScore = $('<p></p>')
+                let newScore = $('<p></p>');
+                if (i == 0) {
+                    newScore = $('<p></p>');
+
+                }
                 newScore.text(score[i].nom + " : " + score[i].score);
-                $('#score').append(newScore);
+                $('#score-details').append(newScore);
             }
         }
     }

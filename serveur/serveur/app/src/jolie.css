@@ -3,9 +3,17 @@ border: solid cadetblue 5px;
 background-color: whitesmoke;
 }
 
-#score
+.scores
 {
     position: absolute;
     right: 15%;
     top:15%;
+    font-size: larger;
+    margin-bottom: 3rem;
+}
+#score-details{
+    position: absolute;
+    right: 15%;
+    top:18%;
+    
 }
