@@ -30,6 +30,9 @@ class Game {
     getScore() {
         return this.score;
     }
+    setScore(unScore) {
+        this.score = unScore;
+    }
     getVie() {
         return this.vie;
     }
@@ -129,7 +132,7 @@ class Playground {
     constructWall() {
         let nbBrickSpeed = 0;
         for (let row = 100; row < 225; row += 25) {
-            for (let col = 12.5; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
+            for (let col = 15; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
                 let brick;
                 let rand = Math.floor(Math.random() * 5) + 1;
                 if (rand % 5 == 0 && nbBrickSpeed < 15) {
@@ -222,6 +225,7 @@ class Playground {
 
 
                 }
+                this.wall.push(brick);
             }
         }
 
@@ -255,7 +259,6 @@ class Playground {
             brick.drawBrick();
         });
         //===============================================
-
     }
 }
 
@@ -375,17 +378,6 @@ class Paddle {
 }
 
 
-class Edge {
-
-}
-
-class Bouncy extends Edge {
-
-}
-
-class Void extends Edge {
-
-}
 
 function getMousePos(evt) {
     let rect = canvas.getBoundingClientRect();
@@ -423,38 +415,56 @@ function getScore(event) {
     xhr.onreadystatechange = function () {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
-            console.log(score);
+            let tab = $('<tbody id="bodyScore"></tbody>');
+            console.log("Ajout du tab");
             for (let i = 0; i < score.length; i++) {
-                console.log(score[i]);
-                let newScore = $('<p></p>');
-                if (i == 0) {
-                    newScore = $('<p></p>');
-
-                }
-                newScore.text(score[i].nom + " : " + score[i].score);
-                $('#score-details').append(newScore);
+                let oneLine = $('<tr></tr>');
+                let name = $('<td></td>');
+                let scorePlayer = $('<td></td>');
+                name.html(score[i].nom);
+                scorePlayer.html(score[i].score);
+                oneLine.append(name);
+                oneLine.append(scorePlayer);
+                tab.append(oneLine);
             }
+            $('#table').append(tab);
         }
     }
     xhr.open('GET', 'http://localhost:3000/bestPlayers/10', true);
     xhr.send();
 }
 
+function updateScore() {
+    let letabScore = this.document.getElementById('tab-Score');
+    console.log(letabScore);
+    $('#bodyScore').remove();
+    //$('#bodyScore');
+    getScore();
+}
 
-function setScore(nom) {
-    console.log("test")
-    let nomGagnant = $('#inputScore').val();
-    console.log(nomGagnant);
-    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: scorePlayer });
+
+function setScoreTab() {
+    console.log("Save score");
+    //Provisoir
+    this.game.setScore(37);
+    let unScore = parseInt(this.game.getScore());
+    console.log(unScore);
+    let nomGagnant = $('#inputName').val();
+    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: unScore });
+    updateScore(); //Update de l'affichage score
 }
 
 
 $(document).ready(function () {
+
     canvas = document.getElementById('drawArea');
 
     context = canvas.getContext('2d');
-    getScore();
     game = new Game(0, 3, null, null);
+
+    //Affichage du score
+    getScore();
+
 
     playground = new Playground();
 

@@ -15,18 +15,11 @@ background-color: whitesmoke;
     position: absolute;
     right: 15%;
     top:18%;
-    
-}
-.vies
-{
-    position: absolute;
-    right: 15%;
-    top:10%;
+    margin-top: 15px;
 }
 
-.scoreJoueur
-{
-    position: absolute;
-    right: 15%;
-    top:13%;
+#table{
+    text-align: left;
+    min-width: 300px;
+    border: black 1px solid;
 }

@@ -17,50 +17,40 @@ exports.initStorage = function () {
  */
 exports.getBestPlayers = function (req, res, next) {
     console.log("getBestPlayers nb = %j", req.params.nb);
-    
-    if(req.params.nb === undefined)
-    {
-        PlayerModel.getPlayers(function(err, players)
-        {
-           if(err)
-               return next(err);
-            else
-            {
+
+    if (req.params.nb === undefined) {
+        PlayerModel.getPlayers(function (err, players) {
+            if (err)
+                return next(err);
+            else {
                 res.json(200, players);
                 return next();
             }
         });
     }
-    else
-    {
-        PlayerModel.getTopPlayers(req.params.nb, function(err, players)
-        {
-            if(err)
+    else {
+        PlayerModel.getTopPlayers(req.params.nb, function (err, players) {
+            if (err)
                 return next(err);
-            else
-            {
+            else {
                 res.json(200, players);
                 return next();
             }
-        });  
+        });
     }
 };
 
-exports.addNewPlayer = function(req, res, next)
-{
+exports.addNewPlayer = function (req, res, next) {
     console.log("CreatePlayer : %j", req.body);
-    if(req.body.nom === undefined || req.body.score === undefined)
+    if (req.body.nom === undefined || req.body.score === undefined)
         return next(new errs.UnprocessableEntityError("createPlayer: parameter is missing"));
-    
-    let player = new PlayerModel.Player(req.body.nom, req.body.score);
-    PlayerModel.addPlayer(player, function(err, player)
-    {
-        if(err)
+
+    let player = new PlayerModel.Player(req.body.nom, parseInt(req.body.score));
+    PlayerModel.addPlayer(player, function (err, player) {
+        if (err)
             return next(err);
-        else
-        {
-            if(player !== null)
-            {
+        else {
+            if (player !== null) {
                 res.json(201, player);;
                 return next();
             }
