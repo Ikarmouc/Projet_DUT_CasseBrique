@@ -15,7 +15,7 @@ class Joueur {
 class Game {
     score;
     vie;
-    jtur;
+    joueur;
     playground;
 
     constructor(score, vie, joueur, playground) {
@@ -58,7 +58,7 @@ class Playground {
     constructWall() {
         let nbBrickSpeed = 0;
         for (let row = 100; row < 225; row += 25) {
-            for (let col = 12.5; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
+            for (let col = 15; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
                 let brick;
                 let rand = Math.floor(Math.random() * 5) + 1;
                 if (rand % 5 == 0 && nbBrickSpeed < 15) {
@@ -245,17 +245,6 @@ class Ball {
     }
 }
 
-class Edge {
-
-}
-
-class Bouncy extends Edge {
-
-}
-
-class Void extends Edge {
-
-}
 
 function getMousePos(evt) {
     let rect = canvas.getBoundingClientRect();
