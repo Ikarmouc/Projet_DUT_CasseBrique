@@ -55,14 +55,12 @@ class Ball {
     color;
     posX;
     posY;
-    angle;
     speed;
     constructor(size, color, posX, posY, angle, speed) {
         this.size = size;
         this.color = color;
         this.posX = posX;
         this.posY = posY;
-        this.angle = angle;
         this.speed = speed;
     }
     getPosX() {
@@ -74,11 +72,10 @@ class Ball {
     getSpeed() {
         return this.speed;
     }
-    addSpeed(amount) {
-        this.speed += amount;
-    }
-    getAngle() {
-        return this.angle;
+    addSpeed(uneSpeed) {
+        console.log("ancienne speed : " + this.speed);
+        this.speed += uneSpeed;
+        console.log("nouvelle speed : " + this.speed);
     }
     getColor() {
         return this.color;
@@ -94,14 +91,13 @@ class Ball {
             context.lineWidth = 5;
             context.strokeStyle = 'black';
             context.stroke();
-            
+
         }
     }
-    
-    moveBall()
-    {
+
+    moveBall() {
         //console.log('x :',this.posX, ' y: ',this.posY)
-        
+
         if (canvas.getContext) {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
@@ -111,18 +107,18 @@ class Ball {
             context.lineWidth = 5;
             context.strokeStyle = 'black';
             context.stroke();
-            this.posY+= dy;
-            this.posX+= dx;
+            this.posY += dy * this.speed;
+            this.posX += dx * this.speed;
         }
 
-    
+
     }
 }
 
 class Playground {
     paddle;
     wall = [];
-    ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30),0,1);
+    ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
     constructor() {
         this.paddle = new Paddle();
         this.paddle.drawPaddle();
@@ -147,50 +143,88 @@ class Playground {
         }
 
     }
-    
-    checkCollisonBallPaddle()
-    {
+
+    checkCollisonBallPaddle() {
         // Collision avec le haut
-        if(this.ball.getPosY() + dy < 3) {
+        if (this.ball.getPosY() + dy < 3) {
             dy = -dy;
         }
 
         // collison sur le mur bas du canvas
-        if(this.ball.getPosY() + dy > canvas.height- 3) {
-            dy = -dy;
+        if (this.ball.getPosY() + dy > canvas.height - 3) {
+            
+            if(game.getVie() < 1)
+            {
+                alert("Game over");
+                
+                let player= prompt("Entrez votre nom", "Votre nom");
+                
+                if (player == null || player == "") {
+                    txt = "User cancelled the prompt.";
+                  } else {
+                    let unScore = parseInt(game.getScore());
+                    console.log(unScore);
+                    $.post('http://localhost:3000/newScore', { nom: player, score: unScore });
+                  }
+                this.ball = null;
+                game.vie = 3;
+                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+            }   
+            if(game.getVie() > 0)
+            {
+            
+                alert("Vie perdue !")
+                game.vie -= 1;
+                console.log(game.getVie());
+                this.ball = null;
+                this.paddle.posX = (canvas.width - 100) / 2;
+                this.paddle.posY = canvas.height - 15;
+                $('.vies').html("Vies restantes : " + game.getVie());
+                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
+            }
         }
-        
+
         // Collision sur le mur gauche et droit
-        if(this.ball.getPosX() + dx > canvas.width || this.ball.posX + dx < 0) {
+        if (this.ball.getPosX() + dx > canvas.width || this.ball.posX + dx < 0) {
             dx = -dx;
         }
 
         // Collision avec le paddle
-        
-        if(this.ball.posY >= this.paddle.posY-this.paddle.height)
-        {
-            if(this.ball.posX+this.ball.size <= this.paddle.posX+this.paddle.width && this.ball.posX+this.ball.size >= this.paddle.posX)
-            {
-                dy = -dy; 
+
+        if (this.ball.posY >= this.paddle.posY - this.paddle.height) {
+            if (this.ball.posX + this.ball.size <= this.paddle.posX + this.paddle.width && this.ball.posX + this.ball.size >= this.paddle.posX) {
+                dy = -dy;
             }
         }
-        console.log(this.ball.speed);
-        // dy = 0;
-        // dx = 0;
+
         // collision avec les briques
-        //console.log(this.wall)
-        if(this.ball.posY == canvas.height/2)
-        {
-            console.log("Partie haute du canvas")
-            for(let i = 0; i< this.wall.length; i++)
-            {
-                if(this.ball.posX )
-                {
-    
+        if (this.ball.posY <= canvas.height / 2) {
+            //console.log("Partie haute du canvas")
+            for (let i = 0; i < this.wall.length; i++) {
+                //console.log(this.ball.posY);
+
+                if (this.ball.posX <= this.wall[i].posX + 69 && this.ball.posX >= this.wall[i].posX - 69 &&
+                    this.ball.posY <= this.wall[i].posY + 10 && this.ball.posY >= this.wall[i].posY - 10) {
+                    //console.log("Colision");
+                    if(this.wall[i] instanceof BrickSpeed)
+                    {
+                        game.score += 30;
+                    }
+                    else
+                    {
+                        game.score += 10;
+                    }
+                    dy = -dy;
+                    $('.score').html("score : " + game.getScore());
+                    console.log(this.ball.speed);
+                    this.ball.addSpeed(this.wall[i].speed);
+                    this.wall.splice(i, 1);
+
+
                 }
             }
         }
-        
+
 
     }
 
@@ -209,7 +243,7 @@ class Playground {
             // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground
             // il faut donc passer par cette méthode
             this.playground.paddle.movePaddle(5);
-            
+
         }
         else if (leftPressed) {
             this.playground.paddle.movePaddle(-5);
@@ -217,11 +251,11 @@ class Playground {
         //===============================================
 
         //================ Bricks =======================
-            this.playground.wall.forEach(brick => {
+        this.playground.wall.forEach(brick => {
             brick.drawBrick();
-            });
+        });
         //===============================================
-        
+
     }
 }
 
@@ -260,20 +294,18 @@ class Brick {
             context.closePath();
         }
     }
-    getPosX()
-    {
+    getPosX() {
         return this.posX;
     }
 
-    getPosY()
-    {
+    getPosY() {
         return this.posY;
     }
 }
 
 class BrickNormal extends Brick {
     constructor(posX, posY) {
-        super("blue", 10, 0, posX, posY);
+        super("blue", 10, 0, posX, posY,);
     }
     getPoints() {
         return super.getPoints();
@@ -288,7 +320,7 @@ class BrickNormal extends Brick {
 
 class BrickSpeed extends Brick {
     constructor(posX, posY) {
-        super("green", 30, 0.5, posX, posY);
+        super("green", 30, 0.2, posX, posY);
     }
     getPoints() {
         return super.getPoints();
@@ -430,6 +462,7 @@ $(document).ready(function () {
     document.addEventListener("keyup", keyUp);
 
     setInterval(playground.drawPlayground, 15);
-
-    $('#score').html("score : " + game.getScore());
+    $('.vies').html("Vies restantes : " + game.getVie());
+    $('.score').html("score : " + game.getScore());
+    
 });

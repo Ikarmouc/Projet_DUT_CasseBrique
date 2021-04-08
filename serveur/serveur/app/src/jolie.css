@@ -17,3 +17,16 @@ background-color: whitesmoke;
     top:18%;
     
 }
+.vies
+{
+    position: absolute;
+    right: 15%;
+    top:10%;
+}
+
+.scoreJoueur
+{
+    position: absolute;
+    right: 15%;
+    top:13%;
+}
