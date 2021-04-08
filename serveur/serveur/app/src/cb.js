@@ -52,22 +52,22 @@ class Playground {
     constructor() {
         this.paddle = new Paddle();
         this.paddle.drawPaddle();
+        this.constructWall();
     }
 
     constructWall() {
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 5; col++) {
+        let nbBrickSpeed = 0;
+        for (let row = 100; row < 225; row += 25) {
+            for (let col = 12.5; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
                 let brick;
-                let rand = Math.floor(Math.random() * 3) + 1;
-                console.log(rand);
-                if (rand % 3 == 0) {
-                    console.log("constructing speed brick");
-                    brick = new BrickSpeed(canvas.width - 200 / col, canvas.height - 30 / row);
+                let rand = Math.floor(Math.random() * 5) + 1;
+                if (rand % 5 == 0 && nbBrickSpeed < 15) {
+                    brick = new BrickSpeed(col, row);
+                    nbBrickSpeed++;
                 } else {
-                    console.log("constructing normal brick");
-                    brick = new BrickNormal(canvas.width - 150 / co, canvas.height - 45);
+                    brick = new BrickNormal(col, row);
                 }
-                brick.drawBrick();
+                this.wall.push(brick);
             }
         }
     }
@@ -82,6 +82,12 @@ class Playground {
         else if (leftPressed) {
             this.playground.paddle.movePaddle(-5);
         }
+        //===============================================
+
+        //================ Bricks =======================
+        this.playground.wall.forEach(brick => {
+            brick.drawBrick();
+        });
         //===============================================
     }
 }
@@ -103,7 +109,7 @@ class Brick {
         this.speed = speed;
         this.posX = posX;
         this.posY = posY;
-        this.width = 70;
+        this.width = (canvas.width) / 10;
         this.height = 20;
     }
     getPoints() {
@@ -119,7 +125,6 @@ class Brick {
             context.fillStyle = this.color;
             context.fill();
             context.closePath();
-            console.log("Brick is drawing");
         }
     }
 }
@@ -288,10 +293,8 @@ function getScore(event) {
     xhr.onreadystatechange = function () {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
-            console.log(score);
             let tab = $('<tbody></tbody>');
             for (let i = 0; i < score.length; i++) {
-                console.log(score[i]);
                 let oneLine = $('<tr></tr>');
                 let name = $('<td></td>');
                 let scorePlayer = $('<td></td>');
@@ -310,9 +313,7 @@ function getScore(event) {
 
 
 function setScore(nom) {
-    console.log("test")
     let nomGagnant = $('#inputScore').val();
-    console.log(nomGagnant);
     $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: scorePlayer });
 }
 
@@ -329,7 +330,6 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
-    playground.constructWall();
     setInterval(playground.drawPlayground, 15);
 
     $('#score').html("score : " + game.getScore());
