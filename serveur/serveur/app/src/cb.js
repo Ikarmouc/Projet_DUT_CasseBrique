@@ -86,14 +86,15 @@ class Ball {
     drawBall() {
         if (canvas.getContext) {
             context.beginPath();
+            this.posX += this.speed;
+            this.posY += this.speed;
             context.arc(this.posX, this.posY, this.size, 0, 2 * Math.PI, false);
             context.fillStyle = "black";
             context.fill();
             context.lineWidth = 5;
             context.strokeStyle = 'black';
             context.stroke();
-            this.posX += this.speed;
-            this.posY += this.speed;
+            
         }
     }
     
@@ -121,7 +122,7 @@ class Ball {
 class Playground {
     paddle;
     wall = [];
-    ball = new Ball(7, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+    ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30),0,1);
     constructor() {
         this.paddle = new Paddle();
         this.paddle.drawPaddle();
@@ -173,28 +174,23 @@ class Playground {
                 dy = -dy; 
             }
         }
-
+        console.log(this.ball.speed);
+        // dy = 0;
+        // dx = 0;
         // collision avec les briques
         //console.log(this.wall)
-        for(let i = 0; i< this.wall.length; i++)
+        if(this.ball.posY == canvas.height/2)
         {
-            if(this.ball.posY == this.wall[i].posY+this.wall[i].height)
+            console.log("Partie haute du canvas")
+            for(let i = 0; i< this.wall.length; i++)
             {
-                if(this.ball.posX+this.ball.size <= this.wall[i].posX+this.wall[i].width && this.ball.posX + this.ball.size >= this.wall[i].posX)
+                if(this.ball.posX )
                 {
-                    dy = -dy; 
+    
                 }
             }
-
-            // if(this.ball.posX <= this.wall[i].posX && this.ball.posY >= this.wall[i].posY)
-            // {
-            //     console.log("position brique : ", this.wall[i].color , "position en x : ", this.wall[i].posX, "position en y : ", this.wall[i].posY )
-            //     console.log("Position en x de la balle : ", this.ball.posX,"Position en x de la balle : ", this.ball.posY);
-            //     console.log("collision !");
-            //     dy =0;
-            //     dx = 0;
-            // }
         }
+        
 
     }
 
@@ -433,7 +429,7 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
-    setInterval(playground.drawPlayground, 12);
+    setInterval(playground.drawPlayground, 15);
 
     $('#score').html("score : " + game.getScore());
 });
