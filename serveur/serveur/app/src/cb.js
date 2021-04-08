@@ -176,7 +176,25 @@ class Playground {
 
         // collision avec les briques
         //console.log(this.wall)
-     
+        for(let i = 0; i< this.wall.length; i++)
+        {
+            if(this.ball.posY == this.wall[i].posY+this.wall[i].height)
+            {
+                if(this.ball.posX+this.ball.size <= this.wall[i].posX+this.wall[i].width && this.ball.posX + this.ball.size >= this.wall[i].posX)
+                {
+                    dy = -dy; 
+                }
+            }
+
+            // if(this.ball.posX <= this.wall[i].posX && this.ball.posY >= this.wall[i].posY)
+            // {
+            //     console.log("position brique : ", this.wall[i].color , "position en x : ", this.wall[i].posX, "position en y : ", this.wall[i].posY )
+            //     console.log("Position en x de la balle : ", this.ball.posX,"Position en x de la balle : ", this.ball.posY);
+            //     console.log("collision !");
+            //     dy =0;
+            //     dx = 0;
+            // }
+        }
 
     }
 
@@ -245,6 +263,15 @@ class Brick {
             context.fill();
             context.closePath();
         }
+    }
+    getPosX()
+    {
+        return this.posX;
+    }
+
+    getPosY()
+    {
+        return this.posY;
     }
 }
 
@@ -406,7 +433,7 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
-    setInterval(playground.drawPlayground, 15);
+    setInterval(playground.drawPlayground, 12);
 
     $('#score').html("score : " + game.getScore());
 });
