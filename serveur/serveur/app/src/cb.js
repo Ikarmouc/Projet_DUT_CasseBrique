@@ -7,7 +7,7 @@ let rightPressed = false;
 let leftPressed = false;
 let dx = 2;
 let dy = -2;
-
+let player;
 
 class Joueur {
     constructor(name) {
@@ -99,8 +99,6 @@ class Ball {
     }
 
     moveBall() {
-        //console.log('x :',this.posX, ' y: ',this.posY)
-
         if (canvas.getContext) {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
@@ -159,19 +157,11 @@ class Playground {
             if(game.getVie() < 1)
             {
                 alert("Game over");
-                
-                let player= prompt("Entrez votre nom", "Votre nom");
-                
-                if (player == null || player == "") {
-                    txt = "User cancelled the prompt.";
-                  } else {
-                    let unScore = parseInt(game.getScore());
-                    console.log(unScore);
-                    $.post('http://localhost:3000/newScore', { nom: player, score: unScore });
-                  }
+                setScoreTab();
                 this.ball = null;
                 game.vie = 3;
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+                dy = -dy;
             }   
             if(game.getVie() > 0)
             {
@@ -445,8 +435,6 @@ function updateScore() {
 
 function setScoreTab() {
     console.log("Save score");
-    //Provisoir
-    this.game.setScore(37);
     let unScore = parseInt(this.game.getScore());
     console.log(unScore);
     let nomGagnant = $('#inputName').val();
