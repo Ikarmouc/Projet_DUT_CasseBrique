@@ -286,6 +286,7 @@ function getScore(event) {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
             let tab = $('<tbody id="bodyScore"></tbody>');
+            console.log("Ajout du tab");
             for (let i = 0; i < score.length; i++) {
                 let oneLine = $('<tr></tr>');
                 let name = $('<td></td>');
@@ -304,23 +305,28 @@ function getScore(event) {
 }
 
 function updateScore() {
-    $('#bodyScore').remove;
+    let letabScore = this.document.getElementById('tab-Score');
+    console.log(letabScore);
+    $('#bodyScore').remove();
+    //$('#bodyScore');
     getScore();
 }
 
 
 function setScoreTab() {
     console.log("Save score");
+    //Provisoir
     this.game.setScore(37);
     let unScore = parseInt(this.game.getScore());
     console.log(unScore);
     let nomGagnant = $('#inputName').val();
-    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: parseInt(unScore) });
+    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: unScore });
     updateScore(); //Update de l'affichage score
 }
 
 
 $(document).ready(function () {
+
     canvas = document.getElementById('drawArea');
 
     context = canvas.getContext('2d');
