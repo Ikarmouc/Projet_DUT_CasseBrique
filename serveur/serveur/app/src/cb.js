@@ -27,6 +27,9 @@ class Game {
     getScore() {
         return this.score;
     }
+    setScore(unScore) {
+        this.score = unScore;
+    }
     getVie() {
         return this.vie;
     }
@@ -282,7 +285,7 @@ function getScore(event) {
     xhr.onreadystatechange = function () {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
-            let tab = $('<tbody></tbody>');
+            let tab = $('<tbody id="bodyScore"></tbody>');
             for (let i = 0; i < score.length; i++) {
                 let oneLine = $('<tr></tr>');
                 let name = $('<td></td>');
@@ -300,10 +303,20 @@ function getScore(event) {
     xhr.send();
 }
 
+function updateScore() {
+    $('#bodyScore').remove;
+    getScore();
+}
 
-function setScore(nom) {
-    let nomGagnant = $('#inputScore').val();
-    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: scorePlayer });
+
+function setScoreTab() {
+    console.log("Save score");
+    this.game.setScore(37);
+    let unScore = parseInt(this.game.getScore());
+    console.log(unScore);
+    let nomGagnant = $('#inputName').val();
+    $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: parseInt(unScore) });
+    updateScore(); //Update de l'affichage score
 }
 
 
@@ -311,8 +324,11 @@ $(document).ready(function () {
     canvas = document.getElementById('drawArea');
 
     context = canvas.getContext('2d');
-    getScore();
     game = new Game(0, 3, null, null);
+
+    //Affichage du score
+    getScore();
+
 
     playground = new Playground();
 
