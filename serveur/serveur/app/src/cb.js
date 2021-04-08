@@ -218,14 +218,14 @@ class Playground {
                         game.score += 10;
                     }
                     dy = -dy;
-                    $('.score').html("score : " + game.getScore());
+                    $('.scoreJoueur').html("score : " + game.getScore());
                     console.log(this.ball.speed);
                     this.ball.addSpeed(this.wall[i].speed);
                     this.wall.splice(i, 1);
 
 
                 }
-                this.wall.push(brick);
+    
             }
         }
 
