@@ -15,5 +15,11 @@ background-color: whitesmoke;
     position: absolute;
     right: 15%;
     top:18%;
-    
+    margin-top: 15px;
+}
+
+#table{
+    text-align: left;
+    min-width: 300px;
+    border: black 1px solid;
 }

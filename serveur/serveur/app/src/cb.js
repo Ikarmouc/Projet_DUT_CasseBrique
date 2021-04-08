@@ -15,7 +15,7 @@ class Joueur {
 class Game {
     score;
     vie;
-    joueur;
+    jtur;
     playground;
 
     constructor(score, vie, joueur, playground) {
@@ -55,12 +55,19 @@ class Playground {
     }
 
     constructWall() {
-        for (let row = 0; row < 7; row++) {
+        for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 5; col++) {
-                if ((Math.random() + 1) % 2 == 0) {
-
-                    let brick = new BrickNormal();
+                let brick;
+                let rand = Math.floor(Math.random() * 3) + 1;
+                console.log(rand);
+                if (rand % 3 == 0) {
+                    console.log("constructing speed brick");
+                    brick = new BrickSpeed(canvas.width - 200 / col, canvas.height - 30 / row);
+                } else {
+                    console.log("constructing normal brick");
+                    brick = new BrickNormal(canvas.width - 150 / co, canvas.height - 45);
                 }
+                brick.drawBrick();
             }
         }
     }
@@ -85,9 +92,9 @@ class Brick {
     speed;
     posX;
     posY;
-    sizeX;
-    sizeY;
-    constructor(color, points, speed, posX, posY, sizeX, sizeY) {
+    width;
+    height;
+    constructor(color, points, speed, posX, posY) {
         if (this.constructor === Brick) {
             throw new TypeError('Abstract class "Brick" cannot be instantiated directly');
         }
@@ -95,10 +102,9 @@ class Brick {
         this.points = points;
         this.speed = speed;
         this.posX = posX;
-        this.posX = posY;
-        this.sizeX = 50;
-        this.sizeY = 30;
-
+        this.posY = posY;
+        this.width = 70;
+        this.height = 20;
     }
     getPoints() {
         return this.points;
@@ -113,6 +119,7 @@ class Brick {
             context.fillStyle = this.color;
             context.fill();
             context.closePath();
+            console.log("Brick is drawing");
         }
     }
 }
@@ -282,16 +289,19 @@ function getScore(event) {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
             console.log(score);
+            let tab = $('<tbody></tbody>');
             for (let i = 0; i < score.length; i++) {
                 console.log(score[i]);
-                let newScore = $('<p></p>');
-                if (i == 0) {
-                    newScore = $('<p></p>');
-
-                }
-                newScore.text(score[i].nom + " : " + score[i].score);
-                $('#score-details').append(newScore);
+                let oneLine = $('<tr></tr>');
+                let name = $('<td></td>');
+                let scorePlayer = $('<td></td>');
+                name.html(score[i].nom);
+                scorePlayer.html(score[i].score);
+                oneLine.append(name);
+                oneLine.append(scorePlayer);
+                tab.append(oneLine);
             }
+            $('#table').append(tab);
         }
     }
     xhr.open('GET', 'http://localhost:3000/bestPlayers/10', true);
@@ -319,6 +329,7 @@ $(document).ready(function () {
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
 
+    playground.constructWall();
     setInterval(playground.drawPlayground, 15);
 
     $('#score').html("score : " + game.getScore());
