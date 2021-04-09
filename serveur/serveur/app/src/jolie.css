@@ -1,8 +1,8 @@
 #drawArea{
-border: solid cadetblue 5px;
-background-color: whitesmoke;
-}
-
+    border: solid cadetblue 5px;
+    background-color: whitesmoke;
+    }
+    
 .scores
 {
     position: absolute;
@@ -11,6 +11,7 @@ background-color: whitesmoke;
     font-size: larger;
     margin-bottom: 3rem;
 }
+
 #score-details{
     position: absolute;
     right: 15%;
