@@ -94,7 +94,6 @@ class Ball {
             context.lineWidth = 5;
             context.strokeStyle = 'black';
             context.stroke();
-
         }
     }
 
@@ -169,7 +168,8 @@ class Playground {
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
                 dy = -dy;
                 dx = -dx;
-
+                rightPressed = false;
+                leftPressed = false;
             }
             if (game.getVie() < 1) {
                 alert("Game over");
@@ -200,8 +200,8 @@ class Playground {
             for (let i = 0; i < this.wall.length; i++) {
                 //console.log(this.ball.posY);
 
-                if (this.ball.posX <= this.wall[i].posX + 69 && this.ball.posX >= this.wall[i].posX - 69 &&
-                    this.ball.posY <= this.wall[i].posY + 10 && this.ball.posY >= this.wall[i].posY - 10) {
+                if (this.ball.posX <= this.wall[i].posX + 70 && this.ball.posX >= this.wall[i].posX &&
+                    this.ball.posY <= this.wall[i].posY + 20 && this.ball.posY >= this.wall[i].posY) {
                     //console.log("Colision");
                     if (this.wall[i] instanceof BrickSpeed) {
                         game.score += 30;
@@ -214,14 +214,9 @@ class Playground {
                     console.log(this.ball.speed);
                     this.ball.addSpeed(this.wall[i].speed);
                     this.wall.splice(i, 1);
-
-
                 }
-
             }
         }
-
-
     }
 
     drawWall() {
@@ -498,7 +493,7 @@ $(document).ready(function () {
     playground.drawPlayground();
 
     $("#start").on("click", start);
-    $('.vies').html("Vies restantes : " + game.getVie());
-    $('.score').html("score : " + game.getScore());
+    $('#vies').html("Vies restantes : " + game.getVie());
+    $('#score').html("Votre score : " + game.getScore());
 
 });
