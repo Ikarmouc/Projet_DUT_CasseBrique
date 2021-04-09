@@ -77,7 +77,9 @@ class Ball {
     }
     addSpeed(uneSpeed) {
         console.log("ancienne speed : " + this.speed);
-        this.speed += uneSpeed;
+        if (uneSpeed + this.speed < 2) {
+            this.speed += uneSpeed;
+        }
         console.log("nouvelle speed : " + this.speed);
     }
     getColor() {
@@ -89,10 +91,10 @@ class Ball {
             this.posX += this.speed;
             this.posY += this.speed;
             context.arc(this.posX, this.posY, this.size, 0, 2 * Math.PI, false);
-            context.fillStyle = "black";
+            context.fillStyle = "#595959";
             context.fill();
             context.lineWidth = 5;
-            context.strokeStyle = 'black';
+            context.strokeStyle = "#595959";
             context.stroke();
         }
     }
@@ -110,8 +112,6 @@ class Ball {
             this.posY += dy * this.speed;
             this.posX += dx * this.speed;
         }
-
-
     }
 }
 
@@ -156,15 +156,17 @@ class Playground {
         // collison sur le mur bas du canvas
         if (this.ball.getPosY() + dy > canvas.height - 3) {
 
+
             if (game.getVie() > 0) {
 
+                console.log(this.wall);
                 alert("Vie perdue !")
                 game.vie -= 1;
                 console.log(game.getVie());
                 this.ball = null;
                 this.paddle.posX = (canvas.width - 100) / 2;
                 this.paddle.posY = canvas.height - 15;
-                $('.vies').html("Vies restantes : " + game.getVie());
+                $('#vies').html("Vies restantes : " + game.getVie());
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
                 dy = -dy;
                 dx = -dx;
@@ -199,21 +201,25 @@ class Playground {
             //console.log("Partie haute du canvas")
             for (let i = 0; i < this.wall.length; i++) {
                 //console.log(this.ball.posY);
-
-                if (this.ball.posX <= this.wall[i].posX + 70 && this.ball.posX >= this.wall[i].posX &&
-                    this.ball.posY <= this.wall[i].posY + 20 && this.ball.posY >= this.wall[i].posY) {
+                if (this.ball.posX <= this.wall[i].posX + this.wall[i].width && this.ball.posX >= this.wall[i].posX &&
+                    this.ball.posY <= this.wall[i].posY + this.wall[i].height && this.ball.posY >= this.wall[i].posY) {
                     //console.log("Colision");
-                    if (this.wall[i] instanceof BrickSpeed) {
-                        game.score += 30;
-                    }
-                    else {
-                        game.score += 10;
-                    }
+                    game.score += this.wall[i].points;
                     dy = -dy;
-                    $('.scoreJoueur').html("score : " + game.getScore());
+                    $('#scoreJoueur').html("score : " + game.getScore());
                     console.log(this.ball.speed);
                     this.ball.addSpeed(this.wall[i].speed);
                     this.wall.splice(i, 1);
+                    if (this.wall.length == 0) {
+                        this.constructWall();
+                        this.drawWall();
+                        this.ball.posX = canvas.width / 2;
+                        this.ball.posY = canvas.height - 30;
+                        dx = 2;
+                        dy = -2;
+                        this.paddle.posX = (canvas.width - 100) / 2;
+                        this.paddle.posY = canvas.height - 15;
+                    }
                 }
             }
         }
@@ -322,7 +328,7 @@ class Brick {
 
 class BrickNormal extends Brick {
     constructor(posX, posY) {
-        super("blue", 10, 0, posX, posY,);
+        super("#1A9988", 10, 0, posX, posY,);
     }
     getPoints() {
         return super.getPoints();
@@ -337,7 +343,7 @@ class BrickNormal extends Brick {
 
 class BrickSpeed extends Brick {
     constructor(posX, posY) {
-        super("green", 30, 0.2, posX, posY);
+        super("#EB5600", 30, 0.1, posX, posY);
     }
     getPoints() {
         return super.getPoints();
@@ -363,7 +369,7 @@ class Paddle {
         this.posY = canvas.height - 15;
         this.width = 100;
         this.height = 10;
-        this.color = "#8faaff";
+        this.color = "#6AA4C8";
     }
 
     movePaddle(moveX) {
