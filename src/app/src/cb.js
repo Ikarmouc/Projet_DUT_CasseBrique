@@ -59,7 +59,7 @@ class Ball {
     posX;
     posY;
     speed;
-    constructor(size, color, posX, posY, angle, speed) {
+    constructor(size, color, posX, posY, speed) {
         this.size = size;
         this.color = color;
         this.posX = posX;
@@ -76,11 +76,9 @@ class Ball {
         return this.speed;
     }
     addSpeed(uneSpeed) {
-        console.log("ancienne speed : " + this.speed);
         if (uneSpeed + this.speed < 2) {
             this.speed += uneSpeed;
         }
-        console.log("nouvelle speed : " + this.speed);
     }
     getColor() {
         return this.color;
@@ -119,17 +117,20 @@ class Playground {
     paddle;
     wall = [];
     ball;
+
+    // Creation des elements du jeu 
     constructor() {
         this.paddle = new Paddle();
         this.paddle.drawPaddle();
 
-        this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
+        this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 1);
         this.ball.drawBall();
 
         this.constructWall();
         this.drawWall();
     }
 
+    // Construction du mur de briques
     constructWall() {
         let nbBrickSpeed = 0;
         for (let row = 100; row < 225; row += 25) {
@@ -153,21 +154,18 @@ class Playground {
             dy = -dy;
         }
 
-        // collison sur le mur bas du canvas
+        // Collison sur le mur bas du canvas
         if (this.ball.getPosY() + dy > canvas.height - 3) {
 
-
+            // Verification de la vie restante du joueur
             if (game.getVie() > 0) {
-
-                console.log(this.wall);
                 alert("Vie perdue !")
                 game.vie -= 1;
-                console.log(game.getVie());
                 this.ball = null;
                 this.paddle.posX = (canvas.width - 100) / 2;
                 this.paddle.posY = canvas.height - 15;
                 $('#vies').html("Vies restantes : " + game.getVie());
-                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
+                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 1);
                 dy = -dy;
                 dx = -dx;
                 rightPressed = false;
@@ -177,9 +175,15 @@ class Playground {
                 alert("Game over");
                 this.ball = null;
                 game.vie = 3;
-                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0);
                 dy = -dy;
                 dx = -dx;
+                this.destroyWall();
+                this.constructWall();
+                this.drawWall();
+
+                $("#restart").css("display", "block");
+                $("#menu").css("display", "block");
             }
         }
 
@@ -196,16 +200,12 @@ class Playground {
 
         // collision avec les briques
         if (this.ball.posY <= canvas.height / 2) {
-            //console.log("Partie haute du canvas")
             for (let i = 0; i < this.wall.length; i++) {
-                //console.log(this.ball.posY);
                 if (this.ball.posX <= this.wall[i].posX + this.wall[i].width && this.ball.posX >= this.wall[i].posX &&
                     this.ball.posY <= this.wall[i].posY + this.wall[i].height && this.ball.posY >= this.wall[i].posY) {
-                    //console.log("Colision");
                     game.score += this.wall[i].points;
                     dy = -dy;
                     $('#scoreJoueur').html("score : " + game.getScore());
-                    console.log(this.ball.speed);
                     this.ball.addSpeed(this.wall[i].speed);
                     this.wall.splice(i, 1);
                     if (this.wall.length == 0) {
@@ -229,15 +229,20 @@ class Playground {
         });
     }
 
+    destroyWall() {
+        this.wall = [];
+    }
+
     drawPlayground() {
+
         //================  Balle ======================
         this.checkCollisonBallPaddle();
 
         this.ball.moveBall();
-        this.paddle.drawPaddle();
+        //===============================================           
 
         //================ Paddle =======================
-
+        this.paddle.drawPaddle();
         if (rightPressed) {
             // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground
             // il faut donc passer par cette méthode
@@ -257,12 +262,11 @@ class Playground {
     drawPlaygroundFromSetInterval() {
         //================  Balle ======================
         this.playground.checkCollisonBallPaddle();
-
         this.playground.ball.moveBall();
-        this.playground.paddle.drawPaddle();
+        //===============================================
 
         //================ Paddle =======================
-
+        this.playground.paddle.drawPaddle();
         if (rightPressed) {
             // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground
             // il faut donc passer par cette méthode
@@ -306,6 +310,7 @@ class Brick {
     getSpeed() {
         return this.speed;
     }
+    //Fonction permettant l'affichage de la brique utilisée quand une nouvelle game est lancée ou bien quand un niveau de mur est totalement détruit
     drawBrick() {
         if (canvas.getContext) {
             context.beginPath();
@@ -339,6 +344,7 @@ class BrickNormal extends Brick {
     }
 }
 
+//Class brickSpeed héritante de la classe Brick mais ayant une vitesse de 0.1 permettant une accélération de la balle
 class BrickSpeed extends Brick {
     constructor(posX, posY) {
         super("#EB5600", 30, 0.1, posX, posY);
@@ -361,7 +367,6 @@ class Paddle {
     width;
     height;
     color;
-
     constructor() {
         this.posX = (canvas.width - 100) / 2;
         this.posY = canvas.height - 15;
@@ -370,6 +375,7 @@ class Paddle {
         this.color = "#6AA4C8";
     }
 
+    //Fonction gérant le déplaccement du paddle
     movePaddle(moveX) {
         if (canvas.getContext) {
             context.clearRect(this.posX, this.posY, this.width, this.height);
@@ -384,6 +390,7 @@ class Paddle {
         this.drawPaddle();
     }
 
+    //Fonction dessinant le paddle
     drawPaddle() {
         if (canvas.getContext) {
             context.beginPath();
@@ -396,7 +403,7 @@ class Paddle {
 }
 
 
-
+// Retourne la position de la souris (pourra etre utilisé pour d'autres fonctionalités)
 function getMousePos(evt) {
     let rect = canvas.getBoundingClientRect();
     let scaleX = canvas.width / rect.width;
@@ -405,6 +412,7 @@ function getMousePos(evt) {
     y = (evt.clientY - rect.top) * scaleY;
 }
 
+// Fonction lancer quand la touche en ASCCI 39 ou 37 sont appuyer
 function keyDown(e) {
     if (e.keyCode == 39) {
         rightPressed = true;
@@ -416,6 +424,7 @@ function keyDown(e) {
     }
 }
 
+// Fonction lancer quand la touche en ASCCI 39 ou 37 sont relacher
 function keyUp(e) {
     if (e.keyCode == 39) {
         rightPressed = false;
@@ -437,7 +446,6 @@ function getScore(event) {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let score = JSON.parse(xhr.responseText);
             let tab = $('<tbody id="bodyScore"></tbody>');
-            console.log("Ajout du tab");
             for (let i = 0; i < score.length; i++) {
                 let oneLine = $('<tr></tr>');
                 let name = $('<td></td>');
@@ -457,31 +465,31 @@ function getScore(event) {
 
 function updateScore() {
     let letabScore = this.document.getElementById('tab-Score');
-    console.log(letabScore);
     $('#bodyScore').remove();
-    //$('#bodyScore');
     getScore();
 }
 
 
 function setScoreTab() {
-    console.log("Save score");
     let unScore = parseInt(this.game.getScore());
-    console.log(unScore);
     let nomGagnant = $('#inputName').val();
     $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: unScore });
     updateScore();
     dx = 2;
     dy = -2;
-    window.reload
-    //Update de l'affichage score
 }
 
 function start() {
+    $("#start").css("display", "none");
     $("#menu").css("display", "none");
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
+
     setInterval(playground.drawPlaygroundFromSetInterval, 15);
+}
+
+function restart() {
+    document.location.reload();
 }
 
 $(document).ready(function () {
@@ -497,6 +505,8 @@ $(document).ready(function () {
     playground.drawPlayground();
 
     $("#start").on("click", start);
+    $("#restart").on("click", restart);
+    $("#restart").css("display", "none");
     $('#vies').html("Vies restantes : " + game.getVie());
     $('#score').html("Votre score : " + game.getScore());
 
