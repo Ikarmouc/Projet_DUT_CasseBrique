@@ -119,12 +119,16 @@ class Ball {
 class Playground {
     paddle;
     wall = [];
-    ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
+    ball;
     constructor() {
         this.paddle = new Paddle();
         this.paddle.drawPaddle();
-        this.constructWall();
+
+        this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
         this.ball.drawBall();
+
+        this.constructWall();
+        this.drawWall();
     }
 
     constructWall() {
@@ -133,7 +137,7 @@ class Playground {
             for (let col = 15; col < canvas.width - ((canvas.width) / 10); col += (canvas.width) / 10 + 5) {
                 let brick;
                 let rand = Math.floor(Math.random() * 5) + 1;
-                if (rand % 5 == 0 && nbBrickSpeed < 15) {
+                if (rand % 5 == 0) {
                     brick = new BrickSpeed(col, row);
                     nbBrickSpeed++;
                 } else {
@@ -142,7 +146,6 @@ class Playground {
                 this.wall.push(brick);
             }
         }
-
     }
 
     checkCollisonBallPaddle() {
@@ -153,10 +156,9 @@ class Playground {
 
         // collison sur le mur bas du canvas
         if (this.ball.getPosY() + dy > canvas.height - 3) {
-             
-            if(game.getVie() > 0)
-            {
-            
+
+            if (game.getVie() > 0) {
+
                 alert("Vie perdue !")
                 game.vie -= 1;
                 console.log(game.getVie());
@@ -167,17 +169,16 @@ class Playground {
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
                 dy = -dy;
                 dx = -dx;
-                
+
             }
-            if(game.getVie() < 1)
-            {
+            if (game.getVie() < 1) {
                 alert("Game over");
                 this.ball = null;
                 game.vie = 3;
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
                 dy = -dy;
                 dx = -dx;
-            } 
+            }
         }
 
         // Collision sur le mur gauche et droit
@@ -202,12 +203,10 @@ class Playground {
                 if (this.ball.posX <= this.wall[i].posX + 69 && this.ball.posX >= this.wall[i].posX - 69 &&
                     this.ball.posY <= this.wall[i].posY + 10 && this.ball.posY >= this.wall[i].posY - 10) {
                     //console.log("Colision");
-                    if(this.wall[i] instanceof BrickSpeed)
-                    {
+                    if (this.wall[i] instanceof BrickSpeed) {
                         game.score += 30;
                     }
-                    else
-                    {
+                    else {
                         game.score += 10;
                     }
                     dy = -dy;
@@ -218,16 +217,45 @@ class Playground {
 
 
                 }
-    
+
             }
         }
 
 
     }
 
+    drawWall() {
+        this.wall.forEach(brick => {
+            brick.drawBrick();
+        });
+    }
+
     drawPlayground() {
+        //================  Balle ======================
+        this.checkCollisonBallPaddle();
 
+        this.ball.moveBall();
+        this.paddle.drawPaddle();
 
+        //================ Paddle =======================
+
+        if (rightPressed) {
+            // this.paddle ne pointe pas sur l'objet de paddle contenu dans playground
+            // il faut donc passer par cette méthode
+            this.paddle.movePaddle(5);
+
+        }
+        else if (leftPressed) {
+            this.paddle.movePaddle(-5);
+        }
+        //===============================================
+
+        //================ Bricks =======================
+        this.drawWall();
+        //===============================================
+    }
+
+    drawPlaygroundFromSetInterval() {
         //================  Balle ======================
         this.playground.checkCollisonBallPaddle();
 
@@ -248,9 +276,7 @@ class Playground {
         //===============================================
 
         //================ Bricks =======================
-        this.playground.wall.forEach(brick => {
-            brick.drawBrick();
-        });
+        this.playground.drawWall();
         //===============================================
     }
 }
@@ -383,9 +409,11 @@ function getMousePos(evt) {
 function keyDown(e) {
     if (e.keyCode == 39) {
         rightPressed = true;
+        leftPressed = false;
     }
     else if (e.keyCode == 37) {
         leftPressed = true;
+        rightPressed = false;
     }
 }
 
@@ -447,27 +475,30 @@ function setScoreTab() {
     dx = 2;
     dy = -2;
     window.reload
-      //Update de l'affichage score
+    //Update de l'affichage score
 }
 
+function start() {
+    $("#menu").css("display", "none");
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+    setInterval(playground.drawPlaygroundFromSetInterval, 15);
+}
 
 $(document).ready(function () {
-
     canvas = document.getElementById('drawArea');
-
     context = canvas.getContext('2d');
+
     game = new Game(0, 3, null, null);
 
     //Affichage du score
     getScore();
 
-
     playground = new Playground();
+    playground.drawPlayground();
 
-    document.addEventListener("keydown", keyDown);
-    document.addEventListener("keyup", keyUp);
-    setInterval(playground.drawPlayground, 15);
+    $("#start").on("click", start);
     $('.vies').html("Vies restantes : " + game.getVie());
     $('.score').html("score : " + game.getScore());
-    
+
 });
