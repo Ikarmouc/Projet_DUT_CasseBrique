@@ -153,16 +153,7 @@ class Playground {
 
         // collison sur le mur bas du canvas
         if (this.ball.getPosY() + dy > canvas.height - 3) {
-            
-            if(game.getVie() < 1)
-            {
-                alert("Game over");
-                setScoreTab();
-                this.ball = null;
-                game.vie = 3;
-                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
-                dy = -dy;
-            }   
+             
             if(game.getVie() > 0)
             {
             
@@ -174,7 +165,19 @@ class Playground {
                 this.paddle.posY = canvas.height - 15;
                 $('.vies').html("Vies restantes : " + game.getVie());
                 this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 1);
+                dy = -dy;
+                dx = -dx;
+                
             }
+            if(game.getVie() < 1)
+            {
+                alert("Game over");
+                this.ball = null;
+                game.vie = 3;
+                this.ball = new Ball(5, null, (canvas.width / 2), (canvas.height - 30), 0, 0);
+                dy = -dy;
+                dx = -dx;
+            } 
         }
 
         // Collision sur le mur gauche et droit
@@ -396,6 +399,7 @@ function keyUp(e) {
 }
 
 
+
 //--------------------------------------------
 //Gestion de la récéption et envoie des scores
 //--------------------------------------------
@@ -439,7 +443,11 @@ function setScoreTab() {
     console.log(unScore);
     let nomGagnant = $('#inputName').val();
     $.post('http://localhost:3000/newScore', { nom: nomGagnant, score: unScore });
-    updateScore(); //Update de l'affichage score
+    updateScore();
+    dx = 2;
+    dy = -2;
+    window.reload
+      //Update de l'affichage score
 }
 
 
@@ -458,7 +466,6 @@ $(document).ready(function () {
 
     document.addEventListener("keydown", keyDown);
     document.addEventListener("keyup", keyUp);
-
     setInterval(playground.drawPlayground, 15);
     $('.vies').html("Vies restantes : " + game.getVie());
     $('.score').html("score : " + game.getScore());
