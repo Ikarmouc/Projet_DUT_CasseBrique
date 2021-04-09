@@ -189,11 +189,9 @@ class Playground {
         }
 
         // Collision avec le paddle
-
-        if (this.ball.posY >= this.paddle.posY - this.paddle.height) {
-            if (this.ball.posX + this.ball.size <= this.paddle.posX + this.paddle.width && this.ball.posX + this.ball.size >= this.paddle.posX) {
-                dy = -dy;
-            }
+        if (this.ball.posX + this.ball.size <= this.paddle.posX + this.paddle.width && this.ball.posX + this.ball.size >= this.paddle.posX
+            && this.ball.posY + this.ball.size <= this.paddle.posY + this.paddle.height && this.ball.posY + this.ball.size >= this.paddle.posY) {
+            dy = -dy;
         }
 
         // collision avec les briques
